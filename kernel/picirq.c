@@ -1,7 +1,6 @@
 // Intel 8259A programmable interrupt controllers.
 
 #include "kernel/traps.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 // I/O Addresses of the two programmable interrupt controllers
@@ -12,9 +11,9 @@
 
 // Current IRQ mask.
 // Initial IRQ mask has interrupt 2 enabled (for slave 8259A).
-static ushort irqmask = 0xFFFF & ~(1 << IRQ_SLAVE);
+static unsigned short irqmask = 0xFFFF & ~(1 << IRQ_SLAVE);
 
-static void picsetmask(ushort mask) {
+static void picsetmask(unsigned short mask) {
   irqmask = mask;
   outb(IO_PIC1 + 1, mask);
   outb(IO_PIC2 + 1, mask >> 8);

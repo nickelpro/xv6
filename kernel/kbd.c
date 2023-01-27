@@ -1,12 +1,11 @@
 #include "kernel/kbd.h"
 #include "kernel/defs.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 int kbdgetc(void) {
-  static uint shift;
-  static uchar* charcode[4] = {normalmap, shiftmap, ctlmap, ctlmap};
-  uint st, data, c;
+  static unsigned shift;
+  static unsigned char* charcode[4] = {normalmap, shiftmap, ctlmap, ctlmap};
+  unsigned st, data, c;
 
   st = inb(KBSTATP);
   if((st & KBS_DIB) == 0)

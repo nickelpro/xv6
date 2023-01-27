@@ -5,14 +5,13 @@
 #include "kernel/proc.h"
 #include "kernel/spinlock.h"
 #include "kernel/traps.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
-extern uint vectors[]; // in vectors.S: array of 256 entry pointers
+extern unsigned vectors[]; // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
-uint ticks;
+unsigned ticks;
 
 void tvinit(void) {
   int i;

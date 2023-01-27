@@ -3,7 +3,6 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/proc.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 static void startothers(void);
@@ -59,9 +58,9 @@ pde_t entrypgdir[]; // For entry.S
 
 // Start the non-boot (AP) processors.
 static void startothers(void) {
-  extern uchar _binary_kernel_entryother_start[],
+  extern unsigned char _binary_kernel_entryother_start[],
       _binary_kernel_entryother_size[];
-  uchar* code;
+  unsigned char* code;
   struct cpu* c;
   char* stack;
 
@@ -70,7 +69,7 @@ static void startothers(void) {
   // _binary_entryother_start.
   code = p2v(0x7000);
   memmove(code, _binary_kernel_entryother_start,
-      (uint) _binary_kernel_entryother_size);
+      (unsigned) _binary_kernel_entryother_size);
 
   for(c = cpus; c < cpus + ncpu; c++) {
     if(c == cpus + cpunum()) // We've started already.

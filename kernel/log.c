@@ -3,7 +3,6 @@
 #include "kernel/fs.h"
 #include "kernel/param.h"
 #include "kernel/spinlock.h"
-#include "kernel/types.h"
 
 // Simple logging that allows concurrent FS system calls.
 //

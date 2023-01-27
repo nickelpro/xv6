@@ -4,7 +4,6 @@
 
 #include "kernel/defs.h"
 #include "kernel/traps.h"
-#include "kernel/types.h"
 
 #define IOAPIC 0xFEC00000 // Default physical address of IO APIC
 
@@ -26,17 +25,17 @@ volatile struct ioapic* ioapic;
 
 // IO APIC MMIO structure: write reg, then read or write data.
 struct ioapic {
-  uint reg;
-  uint pad[3];
-  uint data;
+  unsigned reg;
+  unsigned pad[3];
+  unsigned data;
 };
 
-static uint ioapicread(int reg) {
+static unsigned ioapicread(int reg) {
   ioapic->reg = reg;
   return ioapic->data;
 }
 
-static void ioapicwrite(int reg, uint data) {
+static void ioapicwrite(int reg, unsigned data) {
   ioapic->reg = reg;
   ioapic->data = data;
 }

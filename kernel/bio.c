@@ -25,7 +25,6 @@
 #include "kernel/fs.h"
 #include "kernel/param.h"
 #include "kernel/spinlock.h"
-#include "kernel/types.h"
 
 struct {
   struct spinlock lock;
@@ -56,7 +55,7 @@ void binit(void) {
 // Look through buffer cache for block on device dev.
 // If not found, allocate a buffer.
 // In either case, return B_BUSY buffer.
-static struct buf* bget(uint dev, uint blockno) {
+static struct buf* bget(unsigned dev, unsigned blockno) {
   struct buf* b;
 
   acquire(&bcache.lock);
@@ -91,7 +90,7 @@ loop:
 }
 
 // Return a B_BUSY buf with the contents of the indicated block.
-struct buf* bread(uint dev, uint blockno) {
+struct buf* bread(unsigned dev, unsigned blockno) {
   struct buf* b;
 
   b = bget(dev, blockno);

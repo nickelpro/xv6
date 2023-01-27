@@ -7,7 +7,6 @@
 #include "kernel/fs.h"
 #include "kernel/param.h"
 #include "kernel/spinlock.h"
-#include "kernel/types.h"
 
 struct devsw devsw[NDEV];
 struct {

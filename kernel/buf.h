@@ -2,16 +2,15 @@
 #define XV6_BUF_H
 
 #include "fs.h"
-#include "types.h"
 
 struct buf {
   int flags;
-  uint dev;
-  uint blockno;
+  unsigned dev;
+  unsigned blockno;
   struct buf* prev; // LRU cache list
   struct buf* next;
   struct buf* qnext; // disk queue
-  uchar data[BSIZE];
+  unsigned char data[BSIZE];
 };
 
 #define B_BUSY 0x1  // buffer is locked by some process

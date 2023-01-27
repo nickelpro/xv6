@@ -12,18 +12,17 @@
 #define KERNLINK (KERNBASE + EXTMEM) // Address where kernel is linked
 
 #ifndef __ASSEMBLER__
-#include "kernel/types.h"
 
-static inline uint v2p(void* a) {
-  return ((uint) (a)) - KERNBASE;
+static inline unsigned v2p(void* a) {
+  return ((unsigned) (a)) - KERNBASE;
 }
-static inline void* p2v(uint a) {
+static inline void* p2v(unsigned a) {
   return (void*) ((a) + KERNBASE);
 }
 
 #endif
 
-#define V2P(a) (((uint) (a)) - KERNBASE)
+#define V2P(a) (((unsigned) (a)) - KERNBASE)
 #define P2V(a) (((void*) (a)) + KERNBASE)
 
 #define V2P_WO(x) ((x) -KERNBASE)  // same as V2P, but without casts

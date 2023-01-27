@@ -8,7 +8,7 @@ typedef long Align;
 union header {
   struct {
     union header* ptr;
-    uint size;
+    unsigned size;
   } s;
   Align x;
 };
@@ -38,7 +38,7 @@ void free(void* ap) {
   freep = p;
 }
 
-static Header* morecore(uint nu) {
+static Header* morecore(unsigned nu) {
   char* p;
   Header* hp;
 
@@ -53,9 +53,9 @@ static Header* morecore(uint nu) {
   return freep;
 }
 
-void* realloc(void* ap, uint nbytes) {
+void* realloc(void* ap, unsigned nbytes) {
   Header* bp = (Header*) ap - 1;
-  uint nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;
+  unsigned nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;
 
   if(bp->s.size >= nunits)
     return ap;
@@ -69,9 +69,9 @@ void* realloc(void* ap, uint nbytes) {
   return np;
 }
 
-void* malloc(uint nbytes) {
+void* malloc(unsigned nbytes) {
   Header *p, *prevp;
-  uint nunits;
+  unsigned nunits;
 
   nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;
   if((prevp = freep) == 0) {

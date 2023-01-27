@@ -11,17 +11,17 @@ char* strcpy(char* s, char* t) {
 int strcmp(const char* p, const char* q) {
   while(*p && *p == *q)
     p++, q++;
-  return (uchar) *p - (uchar) *q;
+  return (unsigned char) *p - (unsigned char) *q;
 }
 
-uint strlen(char* s) {
+unsigned strlen(char* s) {
   int n;
 
   for(n = 0; s[n]; n++) {}
   return n;
 }
 
-void* memset(void* dst, int c, uint n) {
+void* memset(void* dst, int c, unsigned n) {
   stosb(dst, c, n);
   return dst;
 }

@@ -4,7 +4,6 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/spinlock.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 struct ptable ptable;
@@ -55,12 +54,12 @@ found:
   // Set up new context to start executing at forkret,
   // which returns to trapret.
   sp -= 4;
-  *(uint*) sp = (uint) trapret;
+  *(unsigned*) sp = (unsigned) trapret;
 
   sp -= sizeof *p->context;
   p->context = (struct context*) sp;
   memset(p->context, 0, sizeof *p->context);
-  p->context->eip = (uint) forkret;
+  p->context->eip = (unsigned) forkret;
 
   return p;
 }
@@ -95,7 +94,7 @@ void userinit(void) {
 // Grow current process's memory by n bytes.
 // Return 0 on success, -1 on failure.
 int growproc(int n) {
-  uint sz;
+  unsigned sz;
 
   sz = proc->sz;
   if(n > 0) {
@@ -411,7 +410,7 @@ void procdump(void) {
   int i;
   struct proc* p;
   char* state;
-  uint pc[10];
+  unsigned pc[10];
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if(p->state == UNUSED)
@@ -422,7 +421,7 @@ void procdump(void) {
       state = "???";
     cprintf("%d %s %s", p->pid, state, p->name);
     if(p->state == SLEEPING) {
-      getcallerpcs((uint*) p->context->ebp + 2, pc);
+      getcallerpcs((unsigned*) p->context->ebp + 2, pc);
       for(i = 0; i < 10 && pc[i] != 0; i++)
         cprintf(" %p", pc[i]);
     }

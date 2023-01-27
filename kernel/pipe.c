@@ -5,17 +5,16 @@
 #include "kernel/param.h"
 #include "kernel/proc.h"
 #include "kernel/spinlock.h"
-#include "kernel/types.h"
 
 #define PIPESIZE 512
 
 struct pipe {
   struct spinlock lock;
   char data[PIPESIZE];
-  uint nread;    // number of bytes read
-  uint nwrite;   // number of bytes written
-  int readopen;  // read fd is still open
-  int writeopen; // write fd is still open
+  unsigned nread;  // number of bytes read
+  unsigned nwrite; // number of bytes written
+  int readopen;    // read fd is still open
+  int writeopen;   // write fd is still open
 };
 
 int pipealloc(struct file** f0, struct file** f1) {

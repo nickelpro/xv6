@@ -1,15 +1,13 @@
 #ifndef XV6_DATE_H
 #define XV6_DATE_H
 
-#include "types.h"
-
 struct rtcdate {
-  uint second;
-  uint minute;
-  uint hour;
-  uint day;
-  uint month;
-  uint year;
+  unsigned second;
+  unsigned minute;
+  unsigned hour;
+  unsigned day;
+  unsigned month;
+  unsigned year;
 };
 
 #endif // XV6_DATE_H

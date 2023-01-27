@@ -4,7 +4,6 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/proc.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 // User code makes a system call with INT T_SYSCALL.
@@ -14,7 +13,7 @@
 // to a saved program counter, and then the first argument.
 
 // Fetch the int at addr from the current process.
-int fetchint(uint addr, int* ip) {
+int fetchint(unsigned addr, int* ip) {
   if(addr >= proc->sz || addr + 4 > proc->sz)
     return -1;
   *ip = *(int*) (addr);
@@ -24,7 +23,7 @@ int fetchint(uint addr, int* ip) {
 // Fetch the nul-terminated string at addr from the current process.
 // Doesn't actually copy the string - just sets *pp to point at it.
 // Returns length of string, not including nul.
-int fetchstr(uint addr, char** pp) {
+int fetchstr(unsigned addr, char** pp) {
   char *s, *ep;
 
   if(addr >= proc->sz)
@@ -50,7 +49,7 @@ int argptr(int n, char** pp, int size) {
 
   if(argint(n, &i) < 0)
     return -1;
-  if((uint) i >= proc->sz || (uint) i + size > proc->sz)
+  if((unsigned) i >= proc->sz || (unsigned) i + size > proc->sz)
     return -1;
   *pp = (char*) i;
   return 0;

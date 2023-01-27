@@ -4,7 +4,6 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/proc.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 int sys_fork(void) {
@@ -46,7 +45,7 @@ int sys_sbrk(void) {
 
 int sys_sleep(void) {
   int n;
-  uint ticks0;
+  unsigned ticks0;
 
   if(argint(0, &n) < 0)
     return -1;
@@ -66,7 +65,7 @@ int sys_sleep(void) {
 // return how many clock tick interrupts have occurred
 // since start.
 int sys_uptime(void) {
-  uint xticks;
+  unsigned xticks;
 
   acquire(&tickslock);
   xticks = ticks;

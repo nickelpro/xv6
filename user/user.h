@@ -5,7 +5,6 @@
 #include "kernel/fcntl.h"
 #include "kernel/fs.h"
 #include "kernel/stat.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 // system calls
@@ -39,11 +38,11 @@ char* strchr(const char*, char c);
 int strcmp(const char*, const char*);
 void printf(int, char*, ...);
 char* gets(char*, int max);
-uint strlen(char*);
-void* memset(void*, int, uint);
-void* malloc(uint);
+unsigned strlen(char*);
+void* memset(void*, int, unsigned);
+void* malloc(unsigned);
 void free(void*);
-void* realloc(void*, uint);
+void* realloc(void*, unsigned);
 int atoi(const char*);
 
 #endif // XV6_USER_H

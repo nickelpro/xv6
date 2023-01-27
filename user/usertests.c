@@ -726,7 +726,7 @@ void concreate(void) {
   int i, pid, n, fd;
   char fa[40];
   struct {
-    ushort inum;
+    unsigned short inum;
     char name[14];
   } de;
 
@@ -1352,7 +1352,7 @@ void forktest(void) {
 void sbrktest(void) {
   int fds[2], pid, pids[10], ppid;
   char *a, *b, *c, *lastaddr, *oldbrk, *p, scratch;
-  uint amt;
+  unsigned amt;
 
   printf(stdout, "sbrk test\n");
   oldbrk = sbrk(0);
@@ -1387,7 +1387,7 @@ void sbrktest(void) {
   // can one grow address space to something big?
 #define BIG (100 * 1024 * 1024)
   a = sbrk(0);
-  amt = (BIG) - (uint) a;
+  amt = (BIG) - (unsigned) a;
   p = sbrk(amt);
   if(p != a) {
     printf(stdout,
@@ -1458,7 +1458,7 @@ void sbrktest(void) {
   for(i = 0; i < sizeof(pids) / sizeof(pids[0]); i++) {
     if((pids[i] = fork()) == 0) {
       // allocate a lot of memory
-      sbrk(BIG - (uint) sbrk(0));
+      sbrk(BIG - (unsigned) sbrk(0));
       write(fds[1], "x", 1);
       // sit around until killed
       for(;;)
@@ -1500,12 +1500,12 @@ void validateint(int* p) {
 
 void validatetest(void) {
   int hi, pid;
-  uint p;
+  unsigned p;
 
   printf(stdout, "validate test\n");
   hi = 1100 * 1024;
 
-  for(p = 0; p <= (uint) hi; p += 4096) {
+  for(p = 0; p <= (unsigned) hi; p += 4096) {
     if((pid = fork()) == 0) {
       // try to crash the kernel by passing in a badly placed integer
       validateint((int*) p);

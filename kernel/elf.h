@@ -1,41 +1,39 @@
 #ifndef XV6_ELF_H
 #define XV6_ELF_H
 
-#include "types.h"
-
 // Format of an ELF executable file
 
 #define ELF_MAGIC 0x464C457FU // "\x7FELF" in little endian
 
 // File header
 struct elfhdr {
-  uint magic; // must equal ELF_MAGIC
-  uchar elf[12];
-  ushort type;
-  ushort machine;
-  uint version;
-  uint entry;
-  uint phoff;
-  uint shoff;
-  uint flags;
-  ushort ehsize;
-  ushort phentsize;
-  ushort phnum;
-  ushort shentsize;
-  ushort shnum;
-  ushort shstrndx;
+  unsigned magic; // must equal ELF_MAGIC
+  unsigned char elf[12];
+  unsigned short type;
+  unsigned short machine;
+  unsigned version;
+  unsigned entry;
+  unsigned phoff;
+  unsigned shoff;
+  unsigned flags;
+  unsigned short ehsize;
+  unsigned short phentsize;
+  unsigned short phnum;
+  unsigned short shentsize;
+  unsigned short shnum;
+  unsigned short shstrndx;
 };
 
 // Program section header
 struct proghdr {
-  uint type;
-  uint off;
-  uint vaddr;
-  uint paddr;
-  uint filesz;
-  uint memsz;
-  uint flags;
-  uint align;
+  unsigned type;
+  unsigned off;
+  unsigned vaddr;
+  unsigned paddr;
+  unsigned filesz;
+  unsigned memsz;
+  unsigned flags;
+  unsigned align;
 };
 
 // Values for Proghdr type

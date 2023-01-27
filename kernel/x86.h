@@ -1,12 +1,10 @@
 #ifndef XV6_X86_H
 #define XV6_X86_H
 
-#include "types.h"
-
 // Routines to let C code use special x86 instructions.
 
-static inline uchar inb(ushort port) {
-  uchar data;
+static inline unsigned char inb(unsigned short port) {
+  unsigned char data;
 
   asm volatile("in %1,%0" : "=a"(data) : "d"(port));
   return data;
@@ -19,11 +17,11 @@ static inline void insl(int port, void* addr, int cnt) {
                : "memory", "cc");
 }
 
-static inline void outb(ushort port, uchar data) {
+static inline void outb(unsigned short port, unsigned char data) {
   asm volatile("out %0,%1" : : "a"(data), "d"(port));
 }
 
-static inline void outw(ushort port, ushort data) {
+static inline void outw(unsigned short port, unsigned short data) {
   asm volatile("out %0,%1" : : "a"(data), "d"(port));
 }
 
@@ -51,11 +49,11 @@ static inline void stosl(void* addr, int data, int cnt) {
 struct segdesc;
 
 static inline void lgdt(struct segdesc* p, int size) {
-  volatile ushort pd[3];
+  volatile unsigned short pd[3];
 
   pd[0] = size - 1;
-  pd[1] = (uint) p;
-  pd[2] = (uint) p >> 16;
+  pd[1] = (unsigned) p;
+  pd[2] = (unsigned) p >> 16;
 
   asm volatile("lgdt (%0)" : : "r"(pd));
 }
@@ -63,26 +61,26 @@ static inline void lgdt(struct segdesc* p, int size) {
 struct gatedesc;
 
 static inline void lidt(struct gatedesc* p, int size) {
-  volatile ushort pd[3];
+  volatile unsigned short pd[3];
 
   pd[0] = size - 1;
-  pd[1] = (uint) p;
-  pd[2] = (uint) p >> 16;
+  pd[1] = (unsigned) p;
+  pd[2] = (unsigned) p >> 16;
 
   asm volatile("lidt (%0)" : : "r"(pd));
 }
 
-static inline void ltr(ushort sel) {
+static inline void ltr(unsigned short sel) {
   asm volatile("ltr %0" : : "r"(sel));
 }
 
-static inline uint readeflags(void) {
-  uint eflags;
+static inline unsigned readeflags(void) {
+  unsigned eflags;
   asm volatile("pushfl; popl %0" : "=r"(eflags));
   return eflags;
 }
 
-static inline void loadgs(ushort v) {
+static inline void loadgs(unsigned short v) {
   asm volatile("movw %0, %%gs" : : "r"(v));
 }
 
@@ -98,8 +96,8 @@ static inline void hlt(void) {
   asm volatile("hlt");
 }
 
-static inline uint xchg(volatile uint* addr, uint newval) {
-  uint result;
+static inline unsigned xchg(volatile unsigned* addr, unsigned newval) {
+  unsigned result;
 
   // The + in "+m" denotes a read-modify-write operand.
   asm volatile("lock; xchgl %0, %1"
@@ -109,13 +107,13 @@ static inline uint xchg(volatile uint* addr, uint newval) {
   return result;
 }
 
-static inline uint rcr2(void) {
-  uint val;
+static inline unsigned rcr2(void) {
+  unsigned val;
   asm volatile("movl %%cr2,%0" : "=r"(val));
   return val;
 }
 
-static inline void lcr3(uint val) {
+static inline void lcr3(unsigned val) {
   asm volatile("movl %0,%%cr3" : : "r"(val));
 }
 
@@ -123,37 +121,37 @@ static inline void lcr3(uint val) {
 //  hardware and by trapasm.S, and passed to trap().
 struct trapframe {
   // registers as pushed by pusha
-  uint edi;
-  uint esi;
-  uint ebp;
-  uint oesp; // useless & ignored
-  uint ebx;
-  uint edx;
-  uint ecx;
-  uint eax;
+  unsigned edi;
+  unsigned esi;
+  unsigned ebp;
+  unsigned oesp; // useless & ignored
+  unsigned ebx;
+  unsigned edx;
+  unsigned ecx;
+  unsigned eax;
 
   // rest of trap frame
-  ushort gs;
-  ushort padding1;
-  ushort fs;
-  ushort padding2;
-  ushort es;
-  ushort padding3;
-  ushort ds;
-  ushort padding4;
-  uint trapno;
+  unsigned short gs;
+  unsigned short padding1;
+  unsigned short fs;
+  unsigned short padding2;
+  unsigned short es;
+  unsigned short padding3;
+  unsigned short ds;
+  unsigned short padding4;
+  unsigned trapno;
 
   // below here defined by x86 hardware
-  uint err;
-  uint eip;
-  ushort cs;
-  ushort padding5;
-  uint eflags;
+  unsigned err;
+  unsigned eip;
+  unsigned short cs;
+  unsigned short padding5;
+  unsigned eflags;
 
   // below here only when crossing rings, such as from user to kernel
-  uint esp;
-  ushort ss;
-  ushort padding6;
+  unsigned esp;
+  unsigned short ss;
+  unsigned short padding6;
 };
 
 #endif // XV6_X86_H

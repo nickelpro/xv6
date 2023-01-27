@@ -8,7 +8,6 @@
 #include "kernel/proc.h"
 #include "kernel/spinlock.h"
 #include "kernel/traps.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 #define COM1 0x3f8

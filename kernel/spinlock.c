@@ -6,7 +6,6 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/proc.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 void initlock(struct spinlock* lk, char* name) {
@@ -57,16 +56,16 @@ void release(struct spinlock* lk) {
 }
 
 // Record the current call stack in pcs[] by following the %ebp chain.
-void getcallerpcs(void* v, uint pcs[]) {
-  uint* ebp;
+void getcallerpcs(void* v, unsigned pcs[]) {
+  unsigned* ebp;
   int i;
 
-  ebp = (uint*) v - 2;
+  ebp = (unsigned*) v - 2;
   for(i = 0; i < 10; i++) {
-    if(ebp == 0 || ebp < (uint*) KERNBASE || ebp == (uint*) 0xffffffff)
+    if(ebp == 0 || ebp < (unsigned*) KERNBASE || ebp == (unsigned*) 0xffffffff)
       break;
-    pcs[i] = ebp[1];      // saved %eip
-    ebp = (uint*) ebp[0]; // saved %ebp
+    pcs[i] = ebp[1];          // saved %eip
+    ebp = (unsigned*) ebp[0]; // saved %ebp
   }
   for(; i < 10; i++)
     pcs[i] = 0;

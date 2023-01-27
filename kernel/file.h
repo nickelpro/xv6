@@ -3,7 +3,6 @@
 
 #include "defs.h"
 #include "fs.h"
-#include "types.h"
 
 struct file {
   enum { FD_NONE, FD_PIPE, FD_INODE } type;
@@ -12,22 +11,22 @@ struct file {
   char writable;
   struct pipe* pipe;
   struct inode* ip;
-  uint off;
+  unsigned off;
 };
 
 // in-memory copy of an inode
 struct inode {
-  uint dev;  // Device number
-  uint inum; // Inode number
-  int ref;   // Reference count
-  int flags; // I_BUSY, I_VALID
+  unsigned dev;  // Device number
+  unsigned inum; // Inode number
+  int ref;       // Reference count
+  int flags;     // I_BUSY, I_VALID
 
   short type; // copy of disk inode
   short major;
   short minor;
   short nlink;
-  uint size;
-  uint addrs[NDIRECT + 1];
+  unsigned size;
+  unsigned addrs[NDIRECT + 1];
 };
 #define I_BUSY 0x1
 #define I_VALID 0x2

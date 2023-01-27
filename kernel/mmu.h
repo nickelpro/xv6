@@ -52,32 +52,33 @@
 #ifndef __ASSEMBLER__
 // Segment Descriptor
 struct segdesc {
-  uint lim_15_0 : 16;  // Low bits of segment limit
-  uint base_15_0 : 16; // Low bits of segment base address
-  uint base_23_16 : 8; // Middle bits of segment base address
-  uint type : 4;       // Segment type (see STS_ constants)
-  uint s : 1;          // 0 = system, 1 = application
-  uint dpl : 2;        // Descriptor Privilege Level
-  uint p : 1;          // Present
-  uint lim_19_16 : 4;  // High bits of segment limit
-  uint avl : 1;        // Unused (available for software use)
-  uint rsv1 : 1;       // Reserved
-  uint db : 1;         // 0 = 16-bit segment, 1 = 32-bit segment
-  uint g : 1;          // Granularity: limit scaled by 4K when set
-  uint base_31_24 : 8; // High bits of segment base address
+  unsigned lim_15_0 : 16;  // Low bits of segment limit
+  unsigned base_15_0 : 16; // Low bits of segment base address
+  unsigned base_23_16 : 8; // Middle bits of segment base address
+  unsigned type : 4;       // Segment type (see STS_ constants)
+  unsigned s : 1;          // 0 = system, 1 = application
+  unsigned dpl : 2;        // Descriptor Privilege Level
+  unsigned p : 1;          // Present
+  unsigned lim_19_16 : 4;  // High bits of segment limit
+  unsigned avl : 1;        // Unused (available for software use)
+  unsigned rsv1 : 1;       // Reserved
+  unsigned db : 1;         // 0 = 16-bit segment, 1 = 32-bit segment
+  unsigned g : 1;          // Granularity: limit scaled by 4K when set
+  unsigned base_31_24 : 8; // High bits of segment base address
 };
 
 // Normal segment
 #define SEG(type, base, lim, dpl)                                              \
   (struct segdesc) {                                                           \
-    ((lim) >> 12) & 0xffff, (uint) (base) &0xffff,                             \
-        ((uint) (base) >> 16) & 0xff, type, 1, dpl, 1, (uint) (lim) >> 28, 0,  \
-        0, 1, 1, (uint) (base) >> 24                                           \
+    ((lim) >> 12) & 0xffff, (unsigned) (base) &0xffff,                         \
+        ((unsigned) (base) >> 16) & 0xff, type, 1, dpl, 1,                     \
+        (unsigned) (lim) >> 28, 0, 0, 1, 1, (unsigned) (base) >> 24            \
   }
 #define SEG16(type, base, lim, dpl)                                            \
   (struct segdesc) {                                                           \
-    (lim) & 0xffff, (uint) (base) &0xffff, ((uint) (base) >> 16) & 0xff, type, \
-        1, dpl, 1, (uint) (lim) >> 16, 0, 0, 1, 0, (uint) (base) >> 24         \
+    (lim) & 0xffff, (unsigned) (base) &0xffff,                                 \
+        ((unsigned) (base) >> 16) & 0xff, type, 1, dpl, 1,                     \
+        (unsigned) (lim) >> 16, 0, 0, 1, 0, (unsigned) (base) >> 24            \
   }
 #endif
 
@@ -114,13 +115,13 @@ struct segdesc {
 //  \--- PDX(va) --/ \--- PTX(va) --/
 
 // page directory index
-#define PDX(va) (((uint) (va) >> PDXSHIFT) & 0x3FF)
+#define PDX(va) (((unsigned) (va) >> PDXSHIFT) & 0x3FF)
 
 // page table index
-#define PTX(va) (((uint) (va) >> PTXSHIFT) & 0x3FF)
+#define PTX(va) (((unsigned) (va) >> PTXSHIFT) & 0x3FF)
 
 // construct virtual address from indexes and offset
-#define PGADDR(d, t, o) ((uint) ((d) << PDXSHIFT | (t) << PTXSHIFT | (o)))
+#define PGADDR(d, t, o) ((unsigned) ((d) << PDXSHIFT | (t) << PTXSHIFT | (o)))
 
 // Page directory and page table constants.
 #define NPDENTRIES 1024 // # directory entries per page directory
@@ -146,66 +147,65 @@ struct segdesc {
 #define PTE_MBZ 0x180 // Bits must be zero
 
 // Address in page table or page directory entry
-#define PTE_ADDR(pte) ((uint) (pte) & ~0xFFF)
-#define PTE_FLAGS(pte) ((uint) (pte) &0xFFF)
+#define PTE_ADDR(pte) ((unsigned) (pte) & ~0xFFF)
+#define PTE_FLAGS(pte) ((unsigned) (pte) &0xFFF)
 
 #ifndef __ASSEMBLER__
-#include "types.h"
 
-typedef uint pte_t;
+typedef unsigned pte_t;
 
 // Task state segment format
 struct taskstate {
-  uint link;  // Old ts selector
-  uint esp0;  // Stack pointers and segment selectors
-  ushort ss0; //   after an increase in privilege level
-  ushort padding1;
-  uint* esp1;
-  ushort ss1;
-  ushort padding2;
-  uint* esp2;
-  ushort ss2;
-  ushort padding3;
-  void* cr3; // Page directory base
-  uint* eip; // Saved state from last task switch
-  uint eflags;
-  uint eax; // More saved state (registers)
-  uint ecx;
-  uint edx;
-  uint ebx;
-  uint* esp;
-  uint* ebp;
-  uint esi;
-  uint edi;
-  ushort es; // Even more saved state (segment selectors)
-  ushort padding4;
-  ushort cs;
-  ushort padding5;
-  ushort ss;
-  ushort padding6;
-  ushort ds;
-  ushort padding7;
-  ushort fs;
-  ushort padding8;
-  ushort gs;
-  ushort padding9;
-  ushort ldt;
-  ushort padding10;
-  ushort t;    // Trap on task switch
-  ushort iomb; // I/O map base address
+  unsigned link;      // Old ts selector
+  unsigned esp0;      // Stack pointers and segment selectors
+  unsigned short ss0; //   after an increase in privilege level
+  unsigned short padding1;
+  unsigned* esp1;
+  unsigned short ss1;
+  unsigned short padding2;
+  unsigned* esp2;
+  unsigned short ss2;
+  unsigned short padding3;
+  void* cr3;     // Page directory base
+  unsigned* eip; // Saved state from last task switch
+  unsigned eflags;
+  unsigned eax; // More saved state (registers)
+  unsigned ecx;
+  unsigned edx;
+  unsigned ebx;
+  unsigned* esp;
+  unsigned* ebp;
+  unsigned esi;
+  unsigned edi;
+  unsigned short es; // Even more saved state (segment selectors)
+  unsigned short padding4;
+  unsigned short cs;
+  unsigned short padding5;
+  unsigned short ss;
+  unsigned short padding6;
+  unsigned short ds;
+  unsigned short padding7;
+  unsigned short fs;
+  unsigned short padding8;
+  unsigned short gs;
+  unsigned short padding9;
+  unsigned short ldt;
+  unsigned short padding10;
+  unsigned short t;    // Trap on task switch
+  unsigned short iomb; // I/O map base address
 };
 
 // Gate descriptors for interrupts and traps
 struct gatedesc {
-  uint off_15_0 : 16;  // low 16 bits of offset in segment
-  uint cs : 16;        // code segment selector
-  uint args : 5;       // # args, 0 for interrupt/trap gates
-  uint rsv1 : 3;       // reserved(should be zero I guess)
-  uint type : 4;       // type(STS_{TG,IG32,TG32})
-  uint s : 1;          // must be 0 (system)
-  uint dpl : 2;        // descriptor(meaning new) privilege level
-  uint p : 1;          // Present
-  uint off_31_16 : 16; // high bits of offset in segment
+  unsigned off_15_0 : 16;  // low 16 bits of offset in segment
+  unsigned cs : 16;        // code segment selector
+  unsigned args : 5;       // # args, 0 for interrupt/trap gates
+  unsigned rsv1 : 3;       // reserved(should be zero I guess)
+  unsigned type : 4;       // type(STS_{TG,IG32,TG32})
+  unsigned s : 1;          // must be 0 (system)
+  unsigned dpl : 2;        // descriptor(meaning new) privilege level
+  unsigned p : 1;          // Present
+  unsigned off_31_16 : 16; // high bits of offset in segment
 };
 
 // Set up a normal interrupt/trap gate descriptor.
@@ -218,7 +218,7 @@ struct gatedesc {
 //        this interrupt/trap gate explicitly using an int instruction.
 #define SETGATE(gate, istrap, sel, off, d)                                     \
   {                                                                            \
-    (gate).off_15_0 = (uint) (off) &0xffff;                                    \
+    (gate).off_15_0 = (unsigned) (off) &0xffff;                                \
     (gate).cs = (sel);                                                         \
     (gate).args = 0;                                                           \
     (gate).rsv1 = 0;                                                           \
@@ -226,7 +226,7 @@ struct gatedesc {
     (gate).s = 0;                                                              \
     (gate).dpl = (d);                                                          \
     (gate).p = 1;                                                              \
-    (gate).off_31_16 = (uint) (off) >> 16;                                     \
+    (gate).off_31_16 = (unsigned) (off) >> 16;                                 \
   }
 
 #endif

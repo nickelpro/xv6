@@ -11,7 +11,6 @@
 #include "kernel/proc.h"
 #include "kernel/spinlock.h"
 #include "kernel/traps.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 static void consputc(int);
@@ -27,7 +26,7 @@ static void printint(int xx, int base, int sign) {
   static char digits[] = "0123456789abcdef";
   char buf[16];
   int i;
-  uint x;
+  unsigned x;
 
   if(sign && (sign = xx < 0))
     x = -xx;
@@ -49,7 +48,7 @@ static void printint(int xx, int base, int sign) {
 // Print to the console. only understands %d, %x, %p, %s.
 void cprintf(char* fmt, ...) {
   int i, c, locking;
-  uint* argp;
+  unsigned* argp;
   char* s;
 
   locking = cons.locking;
@@ -59,7 +58,7 @@ void cprintf(char* fmt, ...) {
   if(fmt == 0)
     panic("null fmt");
 
-  argp = (uint*) (void*) (&fmt + 1);
+  argp = (unsigned*) (void*) (&fmt + 1);
   for(i = 0; (c = fmt[i] & 0xff) != 0; i++) {
     if(c != '%') {
       consputc(c);
@@ -99,7 +98,7 @@ void cprintf(char* fmt, ...) {
 
 void panic(char* s) {
   int i;
-  uint pcs[10];
+  unsigned pcs[10];
 
   cli();
   cons.locking = 0;
@@ -115,7 +114,7 @@ void panic(char* s) {
 
 #define BACKSPACE 0x100
 #define CRTPORT 0x3d4
-static ushort* crt = (ushort*) P2V(0xb8000); // CGA memory
+static unsigned short* crt = (unsigned short*) P2V(0xb8000); // CGA memory
 
 static void cgaputc(int c) {
   int pos;
@@ -168,9 +167,9 @@ void consputc(int c) {
 #define INPUT_BUF 128
 struct {
   char buf[INPUT_BUF];
-  uint r; // Read index
-  uint w; // Write index
-  uint e; // Edit index
+  unsigned r; // Read index
+  unsigned w; // Write index
+  unsigned e; // Edit index
 } input;
 
 #define C(x) ((x) - '@') // Control-x
@@ -218,7 +217,7 @@ void consoleintr(int (*getc)(void)) {
 }
 
 int consoleread(struct inode* ip, char* dst, int n) {
-  uint target;
+  unsigned target;
   int c;
 
   iunlock(ip);

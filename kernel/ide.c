@@ -9,7 +9,6 @@
 #include "kernel/proc.h"
 #include "kernel/spinlock.h"
 #include "kernel/traps.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 #define SECTOR_SIZE 512

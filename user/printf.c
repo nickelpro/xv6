@@ -8,7 +8,7 @@ static void printint(int fd, int xx, int base, int sgn) {
   static char digits[] = "0123456789ABCDEF";
   char buf[16];
   int i, neg;
-  uint x;
+  unsigned x;
 
   neg = 0;
   if(sgn && xx < 0) {
@@ -33,10 +33,10 @@ static void printint(int fd, int xx, int base, int sgn) {
 void printf(int fd, char* fmt, ...) {
   char* s;
   int c, i, state;
-  uint* ap;
+  unsigned* ap;
 
   state = 0;
-  ap = (uint*) (void*) &fmt + 1;
+  ap = (unsigned*) (void*) &fmt + 1;
   for(i = 0; fmt[i]; i++) {
     c = fmt[i] & 0xff;
     if(state == 0) {

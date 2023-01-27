@@ -6,10 +6,9 @@
 #include "kernel/memlayout.h"
 #include "kernel/mmu.h"
 #include "kernel/traps.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
-// Local APIC registers, divided by 4 for use as uint[] indices.
+// Local APIC registers, divided by 4 for use as unsigned[] indices.
 #define ID (0x0020 / 4)    // ID
 #define VER (0x0030 / 4)   // Version
 #define TPR (0x0080 / 4)   // Task Priority
@@ -40,7 +39,7 @@
 #define TCCR (0x0390 / 4)   // Timer Current Count
 #define TDCR (0x03E0 / 4)   // Timer Divide Configuration
 
-volatile uint* lapic; // Initialized in mp.c
+volatile unsigned* lapic; // Initialized in mp.c
 
 static void lapicw(int index, int value) {
   lapic[index] = value;
@@ -123,16 +122,16 @@ void microdelay(int us) {}
 
 // Start additional processor running entry code at addr.
 // See Appendix B of MultiProcessor Specification.
-void lapicstartap(uchar apicid, uint addr) {
+void lapicstartap(unsigned char apicid, unsigned addr) {
   int i;
-  ushort* wrv;
+  unsigned short* wrv;
 
   // "The BSP must initialize CMOS shutdown code to 0AH
   // and the warm reset vector (DWORD based at 40:67) to point at
   // the AP startup code prior to the [universal startup algorithm]."
   outb(CMOS_PORT, 0xF); // offset 0xF is shutdown code
   outb(CMOS_PORT + 1, 0x0A);
-  wrv = (ushort*) P2V((0x40 << 4 | 0x67)); // Warm reset vector
+  wrv = (unsigned short*) P2V((0x40 << 4 | 0x67)); // Warm reset vector
   wrv[0] = 0;
   wrv[1] = addr >> 4;
 
@@ -167,7 +166,7 @@ void lapicstartap(uchar apicid, uint addr) {
 #define MONTH 0x08
 #define YEAR 0x09
 
-static uint cmos_read(uint reg) {
+static unsigned cmos_read(unsigned reg) {
   outb(CMOS_PORT, reg);
   microdelay(200);
 

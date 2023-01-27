@@ -7,7 +7,6 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/spinlock.h"
-#include "kernel/types.h"
 
 void freerange(void* vstart, void* vend);
 extern char end[]; // first address after kernel loaded from ELF file
@@ -40,7 +39,7 @@ void kinit2(void* vstart, void* vend) {
 
 void freerange(void* vstart, void* vend) {
   char* p;
-  p = (char*) PGROUNDUP((uint) vstart);
+  p = (char*) PGROUNDUP((unsigned) vstart);
   for(; p + PGSIZE <= (char*) vend; p += PGSIZE)
     kfree(p);
 }
@@ -52,7 +51,7 @@ void freerange(void* vstart, void* vend) {
 void kfree(char* v) {
   struct run* r;
 
-  if((uint) v % PGSIZE || v < end || v2p(v) >= PHYSTOP)
+  if((unsigned) v % PGSIZE || v < end || v2p(v) >= PHYSTOP)
     panic("kfree");
 
   // Fill with junk to catch dangling refs.

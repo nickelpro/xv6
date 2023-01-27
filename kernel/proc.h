@@ -5,18 +5,17 @@
 #include "mmu.h"
 #include "param.h"
 #include "spinlock.h"
-#include "types.h"
 
 // Segments in proc->gdt.
 #define NSEGS 7
 
 // Per-CPU state
 struct cpu {
-  uchar id;                  // Local APIC ID; index into cpus[] below
+  unsigned char id;          // Local APIC ID; index into cpus[] below
   struct context* scheduler; // swtch() here to enter scheduler
   struct taskstate ts;       // Used by x86 to find stack for interrupt
   struct segdesc gdt[NSEGS]; // x86 global descriptor table
-  volatile uint started;     // Has the CPU started?
+  volatile unsigned started; // Has the CPU started?
   int ncli;                  // Depth of pushcli nesting.
   int intena;                // Were interrupts enabled before pushcli?
 
@@ -50,11 +49,11 @@ extern struct proc* proc asm("%gs:4"); // cpus[cpunum()].proc
 //  at the "Switch stacks" comment. Switch doesn't save eip explicitly,
 //  but it is on the stack and allocproc() manipulates it.
 struct context {
-  uint edi;
-  uint esi;
-  uint ebx;
-  uint ebp;
-  uint eip;
+  unsigned edi;
+  unsigned esi;
+  unsigned ebx;
+  unsigned ebp;
+  unsigned eip;
 };
 
 enum procstate {
@@ -68,7 +67,7 @@ enum procstate {
 
 // Per-process state
 struct proc {
-  uint sz;                    // Size of process memory (bytes)
+  unsigned sz;                // Size of process memory (bytes)
   pde_t* pgdir;               // Page table
   char* kstack;               // Bottom of kernel stack for this process
   enum procstate state;       // Process state

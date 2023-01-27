@@ -8,20 +8,19 @@
 #include "kernel/mmu.h"
 #include "kernel/param.h"
 #include "kernel/proc.h"
-#include "kernel/types.h"
 #include "kernel/x86.h"
 
 struct cpu cpus[NCPU];
 static struct cpu* bcpu;
 int ismp;
 int ncpu;
-uchar ioapicid;
+unsigned char ioapicid;
 
 int mpbcpu(void) {
   return bcpu - cpus;
 }
 
-static uchar sum(uchar* addr, int len) {
+static unsigned char sum(unsigned char* addr, int len) {
   int i, sum;
 
   sum = 0;
@@ -31,8 +30,8 @@ static uchar sum(uchar* addr, int len) {
 }
 
 // Look for an MP structure in the len bytes at addr.
-static struct mp* mpsearch1(uint a, int len) {
-  uchar *e, *p, *addr;
+static struct mp* mpsearch1(unsigned a, int len) {
+  unsigned char *e, *p, *addr;
 
   addr = p2v(a);
   e = addr + len;
@@ -48,11 +47,11 @@ static struct mp* mpsearch1(uint a, int len) {
 // 2) in the last KB of system base memory;
 // 3) in the BIOS ROM between 0xE0000 and 0xFFFFF.
 static struct mp* mpsearch(void) {
-  uchar* bda;
-  uint p;
+  unsigned char* bda;
+  unsigned p;
   struct mp* mp;
 
-  bda = (uchar*) P2V(0x400);
+  bda = (unsigned char*) P2V(0x400);
   if((p = ((bda[0x0F] << 8) | bda[0x0E]) << 4)) {
     if((mp = mpsearch1(p, 1024)))
       return mp;
@@ -75,19 +74,19 @@ static struct mpconf* mpconfig(struct mp** pmp) {
 
   if((mp = mpsearch()) == 0 || mp->physaddr == 0)
     return 0;
-  conf = (struct mpconf*) p2v((uint) mp->physaddr);
+  conf = (struct mpconf*) p2v((unsigned) mp->physaddr);
   if(memcmp(conf, "PCMP", 4) != 0)
     return 0;
   if(conf->version != 1 && conf->version != 4)
     return 0;
-  if(sum((uchar*) conf, conf->length) != 0)
+  if(sum((unsigned char*) conf, conf->length) != 0)
     return 0;
   *pmp = mp;
   return conf;
 }
 
 void mpinit(void) {
-  uchar *p, *e;
+  unsigned char *p, *e;
   struct mp* mp;
   struct mpconf* conf;
   struct mpproc* proc;
@@ -97,8 +96,9 @@ void mpinit(void) {
   if((conf = mpconfig(&mp)) == 0)
     return;
   ismp = 1;
-  lapic = (uint*) conf->lapicaddr;
-  for(p = (uchar*) (conf + 1), e = (uchar*) conf + conf->length; p < e;) {
+  lapic = (unsigned*) conf->lapicaddr;
+  for(p = (unsigned char*) (conf + 1), e = (unsigned char*) conf + conf->length;
+      p < e;) {
     switch(*p) {
       case MPPROC:
         proc = (struct mpproc*) p;

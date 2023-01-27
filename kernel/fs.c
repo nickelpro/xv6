@@ -18,7 +18,6 @@
 #include "kernel/proc.h"
 #include "kernel/spinlock.h"
 #include "kernel/stat.h"
-#include "kernel/types.h"
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 static void itrunc(struct inode*);
@@ -46,7 +45,7 @@ static void bzero(int dev, int bno) {
 // Blocks.
 
 // Allocate a zeroed disk block.
-static uint balloc(uint dev) {
+static unsigned balloc(unsigned dev) {
   int b, bi, m;
   struct buf* bp;
 
@@ -69,7 +68,7 @@ static uint balloc(uint dev) {
 }
 
 // Free a disk block.
-static void bfree(int dev, uint b) {
+static void bfree(int dev, unsigned b) {
   struct buf* bp;
   int bi, m;
 
@@ -161,11 +160,11 @@ void iinit(int dev) {
       sb.bmapstart);
 }
 
-static struct inode* iget(uint dev, uint inum);
+static struct inode* iget(unsigned dev, unsigned inum);
 
 // Allocate a new inode with the given type on device dev.
 // A free inode has a type of zero.
-struct inode* ialloc(uint dev, short type) {
+struct inode* ialloc(unsigned dev, short type) {
   int inum;
   struct buf* bp;
   struct dinode* dip;
@@ -205,7 +204,7 @@ void iupdate(struct inode* ip) {
 // Find the inode with number inum on device dev
 // and return the in-memory copy. Does not lock
 // the inode and does not read it from disk.
-static struct inode* iget(uint dev, uint inum) {
+static struct inode* iget(unsigned dev, unsigned inum) {
   struct inode *ip, *empty;
 
   acquire(&icache.lock);
@@ -328,8 +327,8 @@ void iunlockput(struct inode* ip) {
 
 // Return the disk block address of the nth block in inode ip.
 // If there is no such block, bmap allocates one.
-static uint bmap(struct inode* ip, uint bn) {
-  uint addr, *a;
+static unsigned bmap(struct inode* ip, unsigned bn) {
+  unsigned addr, *a;
   struct buf* bp;
 
   if(bn < NDIRECT) {
@@ -344,7 +343,7 @@ static uint bmap(struct inode* ip, uint bn) {
     if((addr = ip->addrs[NDIRECT]) == 0)
       ip->addrs[NDIRECT] = addr = balloc(ip->dev);
     bp = bread(ip->dev, addr);
-    a = (uint*) bp->data;
+    a = (unsigned*) bp->data;
     if((addr = a[bn]) == 0) {
       a[bn] = addr = balloc(ip->dev);
       log_write(bp);
@@ -364,7 +363,7 @@ static uint bmap(struct inode* ip, uint bn) {
 static void itrunc(struct inode* ip) {
   int i, j;
   struct buf* bp;
-  uint* a;
+  unsigned* a;
 
   for(i = 0; i < NDIRECT; i++) {
     if(ip->addrs[i]) {
@@ -375,7 +374,7 @@ static void itrunc(struct inode* ip) {
 
   if(ip->addrs[NDIRECT]) {
     bp = bread(ip->dev, ip->addrs[NDIRECT]);
-    a = (uint*) bp->data;
+    a = (unsigned*) bp->data;
     for(j = 0; j < NINDIRECT; j++) {
       if(a[j])
         bfree(ip->dev, a[j]);
@@ -399,8 +398,8 @@ void stati(struct inode* ip, struct stat* st) {
 }
 
 // Read data from inode.
-int readi(struct inode* ip, char* dst, uint off, uint n) {
-  uint tot, m;
+int readi(struct inode* ip, char* dst, unsigned off, unsigned n) {
+  unsigned tot, m;
   struct buf* bp;
 
   if(ip->type == T_DEV) {
@@ -424,8 +423,8 @@ int readi(struct inode* ip, char* dst, uint off, uint n) {
 }
 
 // Write data to inode.
-int writei(struct inode* ip, char* src, uint off, uint n) {
-  uint tot, m;
+int writei(struct inode* ip, char* src, unsigned off, unsigned n) {
+  unsigned tot, m;
   struct buf* bp;
 
   if(ip->type == T_DEV) {
@@ -462,8 +461,8 @@ int namecmp(const char* s, const char* t) {
 
 // Look for a directory entry in a directory.
 // If found, set *poff to byte offset of entry.
-struct inode* dirlookup(struct inode* dp, char* name, uint* poff) {
-  uint off, inum;
+struct inode* dirlookup(struct inode* dp, char* name, unsigned* poff) {
+  unsigned off, inum;
   struct dirent de;
 
   if(dp->type != T_DIR)
@@ -487,7 +486,7 @@ struct inode* dirlookup(struct inode* dp, char* name, uint* poff) {
 }
 
 // Write a new directory entry (name, inum) into the directory dp.
-int dirlink(struct inode* dp, char* name, uint inum) {
+int dirlink(struct inode* dp, char* name, unsigned inum) {
   int off;
   struct dirent de;
   struct inode* ip;
