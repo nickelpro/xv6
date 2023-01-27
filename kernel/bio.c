@@ -36,14 +36,12 @@ struct {
 } bcache;
 
 void binit(void) {
-  struct buf* b;
-
   initlock(&bcache.lock, "bcache");
 
   // Create linked list of buffers
   bcache.head.prev = &bcache.head;
   bcache.head.next = &bcache.head;
-  for(b = bcache.buf; b < bcache.buf + NBUF; b++) {
+  for(struct buf* b = bcache.buf; b < bcache.buf + NBUF; b++) {
     b->next = bcache.head.next;
     b->prev = &bcache.head;
     b->dev = -1;
@@ -56,13 +54,11 @@ void binit(void) {
 // If not found, allocate a buffer.
 // In either case, return B_BUSY buffer.
 static struct buf* bget(unsigned dev, unsigned blockno) {
-  struct buf* b;
-
   acquire(&bcache.lock);
 
 loop:
   // Is the block already cached?
-  for(b = bcache.head.next; b != &bcache.head; b = b->next) {
+  for(struct buf* b = bcache.head.next; b != &bcache.head; b = b->next) {
     if(b->dev == dev && b->blockno == blockno) {
       if(!(b->flags & B_BUSY)) {
         b->flags |= B_BUSY;
@@ -77,7 +73,7 @@ loop:
   // Not cached; recycle some non-busy and clean buffer.
   // "clean" because B_DIRTY and !B_BUSY means log.c
   // hasn't yet committed the changes to the buffer.
-  for(b = bcache.head.prev; b != &bcache.head; b = b->prev) {
+  for(struct buf* b = bcache.head.prev; b != &bcache.head; b = b->prev) {
     if((b->flags & B_BUSY) == 0 && (b->flags & B_DIRTY) == 0) {
       b->dev = dev;
       b->blockno = blockno;
@@ -91,9 +87,7 @@ loop:
 
 // Return a B_BUSY buf with the contents of the indicated block.
 struct buf* bread(unsigned dev, unsigned blockno) {
-  struct buf* b;
-
-  b = bget(dev, blockno);
+  struct buf* b = bget(dev, blockno);
   if(!(b->flags & B_VALID)) {
     iderw(b);
   }
