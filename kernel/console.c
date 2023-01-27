@@ -25,15 +25,10 @@ static struct {
 static void printint(int xx, int base, int sign) {
   static char digits[] = "0123456789abcdef";
   char buf[16];
-  int i;
-  unsigned x;
 
-  if(sign && (sign = xx < 0))
-    x = -xx;
-  else
-    x = xx;
+  unsigned x = sign && (sign = xx < 0) ? -xx : xx;
+  int i = 0;
 
-  i = 0;
   do {
     buf[i++] = digits[x % base];
   } while((x /= base) != 0);
@@ -47,19 +42,15 @@ static void printint(int xx, int base, int sign) {
 
 // Print to the console. only understands %d, %x, %p, %s.
 void cprintf(char* fmt, ...) {
-  int i, c, locking;
-  unsigned* argp;
-  char* s;
-
-  locking = cons.locking;
+  int locking = cons.locking;
   if(locking)
     acquire(&cons.lock);
 
   if(fmt == 0)
     panic("null fmt");
 
-  argp = (unsigned*) (void*) (&fmt + 1);
-  for(i = 0; (c = fmt[i] & 0xff) != 0; i++) {
+  unsigned* argp = (unsigned*) (void*) (&fmt + 1);
+  for(int c, i = 0; (c = fmt[i] & 0xff) != 0; i++) {
     if(c != '%') {
       consputc(c);
       continue;
@@ -67,6 +58,8 @@ void cprintf(char* fmt, ...) {
     c = fmt[++i] & 0xff;
     if(c == 0)
       break;
+
+    char* s;
     switch(c) {
       case 'd':
         printint(*argp++, 10, 1);
@@ -97,7 +90,6 @@ void cprintf(char* fmt, ...) {
 }
 
 void panic(char* s) {
-  int i;
   unsigned pcs[10];
 
   cli();
@@ -106,7 +98,7 @@ void panic(char* s) {
   cprintf(s);
   cprintf("\n");
   getcallerpcs(&s, pcs);
-  for(i = 0; i < 10; i++)
+  for(int i = 0; i < 10; i++)
     cprintf(" %p", pcs[i]);
   panicked = 1; // freeze other CPU
   for(;;) {}
@@ -117,11 +109,9 @@ void panic(char* s) {
 static unsigned short* crt = (unsigned short*) P2V(0xb8000); // CGA memory
 
 static void cgaputc(int c) {
-  int pos;
-
   // Cursor position: col + 80*row.
   outb(CRTPORT, 14);
-  pos = inb(CRTPORT + 1) << 8;
+  int pos = inb(CRTPORT + 1) << 8;
   outb(CRTPORT, 15);
   pos |= inb(CRTPORT + 1);
 
@@ -217,11 +207,8 @@ void consoleintr(int (*getc)(void)) {
 }
 
 int consoleread(struct inode* ip, char* dst, int n) {
-  unsigned target;
-  int c;
-
   iunlock(ip);
-  target = n;
+  unsigned target = n;
   acquire(&cons.lock);
   while(n > 0) {
     while(input.r == input.w) {
@@ -232,7 +219,7 @@ int consoleread(struct inode* ip, char* dst, int n) {
       }
       sleep(&input.r, &cons.lock);
     }
-    c = input.buf[input.r++ % INPUT_BUF];
+    int c = input.buf[input.r++ % INPUT_BUF];
     if(c == C('D')) { // EOF
       if(n < target) {
         // Save ^D for next time, to make sure
@@ -253,11 +240,9 @@ int consoleread(struct inode* ip, char* dst, int n) {
 }
 
 int consolewrite(struct inode* ip, char* buf, int n) {
-  int i;
-
   iunlock(ip);
   acquire(&cons.lock);
-  for(i = 0; i < n; i++)
+  for(int i = 0; i < n; i++)
     consputc(buf[i] & 0xff);
   release(&cons.lock);
   ilock(ip);
