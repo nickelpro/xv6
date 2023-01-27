@@ -14,12 +14,7 @@
 void readseg(unsigned char*, unsigned, unsigned);
 
 void bootmain(void) {
-  struct elfhdr* elf;
-  struct proghdr *ph, *eph;
-  void (*entry)(void);
-  unsigned char* pa;
-
-  elf = (struct elfhdr*) 0x10000; // scratch space
+  struct elfhdr* elf = (struct elfhdr*) 0x10000; // scratch space
 
   // Read 1st page off disk
   readseg((unsigned char*) elf, 4096, 0);
@@ -29,10 +24,9 @@ void bootmain(void) {
     return; // let bootasm.S handle error
 
   // Load each program segment (ignores ph flags).
-  ph = (struct proghdr*) ((unsigned char*) elf + elf->phoff);
-  eph = ph + elf->phnum;
-  for(; ph < eph; ph++) {
-    pa = (unsigned char*) ph->paddr;
+  struct proghdr* ph = (struct proghdr*) ((unsigned char*) elf + elf->phoff);
+  for(struct proghdr* eph = ph + elf->phnum; ph < eph; ph++) {
+    unsigned char* pa = (unsigned char*) ph->paddr;
     readseg(pa, ph->filesz, ph->off);
     if(ph->memsz > ph->filesz)
       stosb(pa + ph->filesz, 0, ph->memsz - ph->filesz);
@@ -40,8 +34,7 @@ void bootmain(void) {
 
   // Call the entry point from the ELF header.
   // Does not return!
-  entry = (void (*)(void))(elf->entry);
-  entry();
+  ((void (*)(void))(elf->entry))();
 }
 
 void waitdisk(void) {
@@ -68,9 +61,7 @@ void readsect(void* dst, unsigned offset) {
 // Read 'count' bytes at 'offset' from kernel into physical address 'pa'.
 // Might copy more than asked.
 void readseg(unsigned char* pa, unsigned count, unsigned offset) {
-  unsigned char* epa;
-
-  epa = pa + count;
+  unsigned char* epa = pa + count;
 
   // Round down to sector boundary.
   pa -= offset % SECTSIZE;
